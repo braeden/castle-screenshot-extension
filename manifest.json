@@ -1,0 +1,13 @@
+{
+    "name": "Castle Screenshots",
+    "version": "0.1",
+    "description": "Changes out emails",
+    "permissions": ["https://*.castle.io/*", "activeTab"],
+    "browser_action": {
+        "default_icon": "icon.png"
+    },
+    "background" : {
+        "scripts" : ["background.js"]
+    },
+    "manifest_version": 2
+}
