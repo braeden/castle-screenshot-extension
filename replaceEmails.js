@@ -9,7 +9,7 @@
 
         //names, nouns, animals, adjectives, slugs, suffix
         let createRandomEmail = () => {
-            return `${randElem(fake.adjectives)}\
+            return `${randElem(fake.pos_adjectives)}\
 ${randElem(fake.slugs)}\
 ${randElem(fake.animals)}\
 ${randInt(0,1) ? '' : randInt(0,99)}@\
@@ -24,9 +24,7 @@ ${randElem(fake.suffix)}`.toLowerCase()
             nodes.forEach(node => {
                 if (node.hasChildNodes()) walk(node.childNodes);
                 if (node.nodeValue && hasEmail(node.nodeValue)) {
-                    if (!randomEmailObject[node.nodeValue]) {
-                        randomEmailObject[node.nodeValue] = createRandomEmail()
-                    }
+                    randomEmailObject[node.nodeValue] = randomEmailObject[node.nodeValue] || createRandomEmail()
                     node.nodeValue = node.nodeValue.replace(
                         emailRegex,
                         randomEmailObject[node.nodeValue]
