@@ -1,41 +1,41 @@
 {
-    let hashCode = str => {
-        var hash = 0;
-        if (str.length == 0) {
-            return hash;
+    (async () => {
+        const fake = await fetch(chrome.extension.getURL('/data/fakeInfo.json')).then(response => response.json())
+
+        let randElem = array => array[Math.floor(Math.random() * array.length)]
+        let randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        let randomEmailObject = {}
+
+        //names, nouns, animals, adjectives, slugs, suffix
+        let createRandomEmail = () => {
+            return `${randElem(fake.adjectives)}\
+${randElem(fake.slugs)}\
+${randElem(fake.animals)}\
+${randInt(0,1) ? '' : randInt(0,99)}@\
+${randElem(fake.suffix)}`.toLowerCase()
         }
-        for (var i = 0; i < str.length; i++) {
-            var char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return Math.abs(hash);
-    }
 
-    let emailRegex = /[\w+.]+@[\w\.]+/;
+        let emailRegex = /[\w-+.]+@[\w\.]+/;
 
-    // const randomString = (n = 5) => {
-    //     let output = ''
-    //     for (let i = 0; i < n; i++) {
-    //         output += String.fromCharCode(97 + Math.floor(Math.random() * 26))
-    //     }
-    //     return output
-    // }
+        let hasEmail = text => emailRegex.test(text);
 
-    let hasEmail = text => emailRegex.test(text);
-
-    let walk = nodes => {
-        nodes.forEach(node => {
-            if (node.hasChildNodes()) walk(node.childNodes);
-            if (node.nodeValue && hasEmail(node.nodeValue)) {
-                node.nodeValue = node.nodeValue.replace(
-                    emailRegex,
-                    `${hashCode(node.nodeValue).toString(36)}@castle.io`
-                );
-            }
-        });
-    };
+        let walk = nodes => {
+            nodes.forEach(node => {
+                if (node.hasChildNodes()) walk(node.childNodes);
+                if (node.nodeValue && hasEmail(node.nodeValue)) {
+                    if (!randomEmailObject[node.nodeValue]) {
+                        randomEmailObject[node.nodeValue] = createRandomEmail()
+                    }
+                    node.nodeValue = node.nodeValue.replace(
+                        emailRegex,
+                        randomEmailObject[node.nodeValue]
+                    );
+                }
+            });
+        };
 
 
-    walk(document.body.childNodes);
+        walk(document.body.childNodes);
+    })();
 }
